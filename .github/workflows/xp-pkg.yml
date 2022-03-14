@@ -22,7 +22,7 @@ jobs:
       # The tagger step uses the same logic in the build submodule to generate package tag
       # https://github.com/upbound/build/blob/4f64913157a952dbe77cd9e05457d9abe695a1d4/makelib/common.mk#L193
       - name: Set tag
-        run: echo "::set-output name=VERSION_TAG::$(git describe --dirty --always --tags | sed 's/-/./2' | sed 's/-/./2' )"
+        run: echo "::set-output name=VERSION_TAG::$(git describe --dirty --always --tags | sed 's/-.*//' )"
         id: tagger
       - name: Login to Docker
         uses: docker/login-action@v1
