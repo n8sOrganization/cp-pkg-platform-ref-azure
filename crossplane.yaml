@@ -1,10 +1,10 @@
 apiVersion: meta.pkg.crossplane.io/v1alpha1
 kind: Configuration
 metadata:
-  name: platform-ref-azure
+  name: cp-pkg-platform-ref-azure
   annotations:
     meta.crossplane.io/maintainer: Upbound <info@upbound.io>
-    meta.crossplane.io/source: github.com/upbound/platform-ref-azure
+    meta.crossplane.io/source: github.com/n8sOrganization/cp-pkg-platform-ref-azure
     meta.crossplane.io/license: Apache-2.0
     meta.crossplane.io/description: |
       This reference platform Configuration for Kubernetes and Data Services
@@ -52,7 +52,7 @@ metadata:
     company: Upbound
     maintainer: Upbound <info@upbound.io>
     keywords: azure, cloud-native, kubernetes, example, platform, reference
-    source: github.com/upbound/platform-ref-azure
+    source: github.com/n8sOrganization/cp-pkg-platform-ref-azure
     license: Apache-2.0
     descriptionShort: |
       The Azure reference platform for Kubernetes and Data Services.
