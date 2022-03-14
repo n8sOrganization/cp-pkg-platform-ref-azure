@@ -8,7 +8,7 @@ on:
   workflow_dispatch: {}
 
 env:
-  DOCKER_USR: ${{ secrets.DOCKER_PW }}
+  DOCKER_USR: ${{ secrets.UPBOUND_ROBOT_USR }}
 
 jobs:
   configuration:
