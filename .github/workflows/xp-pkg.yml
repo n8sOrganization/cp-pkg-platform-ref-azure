@@ -40,8 +40,8 @@ jobs:
       - name: Push
         uses: crossplane-contrib/xpkg-action@v0.2.0
         with:
-          command: push configuration -f package.xpkg registry.upbound.io/nate-organization/platform-ref-azure:${{ steps.tagger.outputs.VERSION_TAG }}
+          command: push configuration -f package.xpkg registry.upbound.io/nate-organization/cp-pkg-platform-ref-azure:${{ steps.tagger.outputs.VERSION_TAG }}
       - name: Push Latest
         uses: crossplane-contrib/xpkg-action@v0.2.0
         with:
-          command: push configuration -f package.xpkg registry.upbound.io/nate-organization/platform-ref-azure
+          command: push configuration -f package.xpkg registry.upbound.io/nate-organization/cp-pkg-platform-ref-azure
