@@ -36,7 +36,7 @@ jobs:
         with:
           channel: stable
           version: current
-          command: build configuration -f ${{ github.workspace }} --name package.xpkg --ignore '.github/*,.github/*/*,examples/*,hack/*'
+          command: build configuration -f ${{ github.workspace }} --name package.xpkg --ignore 'configuration/*,.github/*,.github/*/*,examples/*,hack/*'
       - name: Push
         uses: crossplane-contrib/xpkg-action@v0.2.0
         with:
@@ -45,3 +45,16 @@ jobs:
         uses: crossplane-contrib/xpkg-action@v0.2.0
         with:
           command: push configuration -f package.xpkg registry.upbound.io/nate-organization/cp-pkg-platform-ref-azure
+      
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Update manifests
+        run: sed -i "s|package: registry.upbound.io/nate-organization/cp-pkg-platform-ref-azure:${{ steps.tagger.outputs.VERSION_TAG }}|" configuration.yml
+
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v7
+        with:
+          add: '.'
+          message: "[ci skip] deploy from ${{ steps.prep.outputs.VERSION }}"
+          signoff: true
