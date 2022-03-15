@@ -47,7 +47,7 @@ jobs:
           command: push configuration -f package.xpkg registry.upbound.io/nate-organization/cp-pkg-platform-ref-azure
       
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Update manifests
         run: |
