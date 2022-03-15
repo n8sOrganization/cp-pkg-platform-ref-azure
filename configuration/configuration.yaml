@@ -4,7 +4,7 @@ metadata:
   name: cp-pkg-platform-ref-azure
 spec:
   ignoreCrossplaneConstraints: false
-  package: registry.upbound.io/nate-organization/cp-pkg-platform-ref-azure:v0.0.6
+  package: registry.upbound.io/nate-organization/cp-pkg-platform-ref-azure:v0.0.7
   packagePullPolicy: Always
   revisionActivationPolicy: Automatic
   revisionHistoryLimit: 1
