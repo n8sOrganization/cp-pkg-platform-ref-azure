@@ -5,7 +5,7 @@ metadata:
 spec:
   ignoreCrossplaneConstraints: false
 <<<<<<< HEAD
-  package: registry.upbound.io/nate-organization/cp-pkg-platform-ref-azure:v0.0.8
+  package: registry.upbound.io/nate-organization/cp-pkg-platform-ref-azure:v0.0.5
 =======
   package: registry.upbound.io/nate-organization/cp-pkg-platform-ref-azure:v0.0.5
 >>>>>>> 6d14932479171d09c67001d0900f82ca774dff38
