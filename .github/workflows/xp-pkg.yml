@@ -50,11 +50,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Update manifests
-        run: sed -i "s|package: registry.upbound.io/nate-organization/cp-pkg-platform-ref-azure:${{ steps.tagger.outputs.VERSION_TAG }}|" configuration.yml
-
+        run: |
+          sed -i -e  "s|package: registry.upbound.io/nate-organization/cp-package-platform-ref-azure:.*|package: registry.upbound.io/nate-organization/cp-pkg-platform-ref-azure:${{ steps.tagger.outputs.VERSION_TAG }}|g" configuration/configuration.yaml
+        
       - name: Commit changes
         uses: EndBug/add-and-commit@v7
         with:
           add: '.'
-          message: "[ci skip] deploy from ${{ steps.prep.outputs.VERSION }}"
+          message: "[ci skip] package version update"
           signoff: true
