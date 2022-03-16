@@ -44,17 +44,14 @@ jobs:
       - name: Push Latest
         uses: crossplane-contrib/xpkg-action@v0.2.0
         with:
-          command: push configuration -f package.xpkg registry.upbound.io/nate-organization/cp-pkg-platform-ref-azure
-      
-      - name: Checkout repo
-        uses: actions/checkout@v2
-
-      - name: Update manifests
+          command: push configuration -f package.xpkg registry.upbound.io/nate-organization/cp-pkg-platform-ref-azure 
+      - name: Update manifest
         run: |
           sed -i -e "s|package: registry.upbound.io/nate-organization/cp-pkg-platform-ref-azure:.*|package: registry.upbound.io/nate-organization/cp-pkg-platform-ref-azure:${{ steps.tagger.outputs.VERSION_TAG }}|g" ./configuration/configuration.yaml
       - name: Commit changes
-        uses: EndBug/add-and-commit@v7
+        uses: EndBug/add-and-commit@v9
         with:
           add: '.'
           message: "package version update"
           signoff: true
+          default_author: github_actions
