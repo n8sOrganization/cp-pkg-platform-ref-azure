@@ -54,4 +54,3 @@ jobs:
           add: '.'
           message: "github bot package version update"
           signoff: true
-          default_author: github_actions
