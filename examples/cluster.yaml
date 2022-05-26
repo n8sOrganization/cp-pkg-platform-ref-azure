@@ -8,7 +8,7 @@ spec:
     nodes:
       count: 1 #1-100
       size: small #small/medium/large
-    charts:
+    services:
       operators:
         prometheus:
           version: "15.0.1"
