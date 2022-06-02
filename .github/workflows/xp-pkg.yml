@@ -7,9 +7,6 @@ on:
       - release-*
   workflow_dispatch: {}
 
-env:
-  DOCKER_USR: ${{ secrets.UPBOUND_ROBOT_USR }}
-
 jobs:
   configuration:
     runs-on: ubuntu-18.04
