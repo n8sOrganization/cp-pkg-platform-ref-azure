@@ -35,7 +35,6 @@ jobs:
           curl -sL https://cli.upbound.io | sh
           ./up login -u ${{ secrets.UPBOUND_ROBOT_USR }} -p ${{ secrets.UPBOUND_ROBOT_PSW }}
           ./up xpkg push -f package.xpkg xpkg.upbound.io/nate-organization/cp-pkg-platform-ref-azure:${{ steps.tagger.outputs.VERSION_TAG }}
-          ./up xpkg push -f package.xpkg xpkg.upbound.io/nate-organization/cp-pkg-platform-ref-azure:latest
       - name: Checkout
         uses: actions/checkout@v2
       - name: Update manifest
