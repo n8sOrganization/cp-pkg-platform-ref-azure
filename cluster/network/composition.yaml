@@ -38,7 +38,7 @@ spec:
         location: West US 2
         properties:
           addressSpace:
-            addressPrefixes: ['192.168.1.0/16']
+            addressPrefixes: ['192.168.0.0/16']
     patches:
       - fromFieldPath: spec.id
         toFieldPath: metadata.labels[app]
