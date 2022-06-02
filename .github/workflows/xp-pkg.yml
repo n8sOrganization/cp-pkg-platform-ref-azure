@@ -24,24 +24,18 @@ jobs:
       - name: Set tag
         run: echo "::set-output name=VERSION_TAG::$(git describe --dirty --always --tags | sed 's/-.*//' )"
         id: tagger
-      - name: Install Up CLI
-        run: curl -sL https://cli.upbound.io | sh
-      - name: Login
-        run: up login -u ${{ secrets.UPBOUND_ROBOT_USR }} -p ${{ secrets.UPBOUND_ROBOT_PSW }}
       - name: Build
         uses: crossplane-contrib/xpkg-action@v0.2.0
         with:
           channel: stable
           version: current
           command: build configuration -f ${{ github.workspace }} --name package.xpkg --ignore 'configuration/*,.github/*,.github/*/*,examples/*,hack/*'
-      - name: Push
-        uses: crossplane-contrib/xpkg-action@v0.2.0
-        with:
-          command: up xpkg push -f package.xpkg xpkg.upbound.io/nate-organization/cp-pkg-platform-ref-azure:${{ steps.tagger.outputs.VERSION_TAG }}
-      - name: Push Latest
-        uses: crossplane-contrib/xpkg-action@v0.2.0
-        with:
-          command: up xpkg push -f package.xpkg xpkg.upbound.io/nate-organization/cp-pkg-platform-ref-azure 
+      - name: Install Up CLI and Push Package
+        run: |
+          curl -sL https://cli.upbound.io | sh
+          up login -u ${{ secrets.UPBOUND_ROBOT_USR }} -p ${{ secrets.UPBOUND_ROBOT_PSW }}
+          up xpkg push -f package.xpkg xpkg.upbound.io/nate-organization/cp-pkg-platform-ref-azure:${{ steps.tagger.outputs.VERSION_TAG }}
+          up xpkg push -f package.xpkg xpkg.upbound.io/nate-organization/cp-pkg-platform-ref-azure 
       - name: Checkout
         uses: actions/checkout@v2
       - name: Update manifest
