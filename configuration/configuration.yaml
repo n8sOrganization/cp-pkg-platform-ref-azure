@@ -4,7 +4,7 @@ metadata:
   name: cp-pkg-platform-ref-azure
 spec:
   ignoreCrossplaneConstraints: false
-  package: xpkg.upbound.io/nate-organization/cp-pkg-platform-ref-azure:v0.0.21
+  package: xpkg.upbound.io/nate-organization/cp-pkg-platform-ref-azure:v0.0.22
   packagePullSecrets:
     - name: myorg-package-pull-secret
   packagePullPolicy: Always
