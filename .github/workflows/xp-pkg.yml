@@ -31,12 +31,12 @@ jobs:
         run: |
           curl -sL https://cli.upbound.io | sh
           ./up login -u ${{ secrets.UPBOUND_ROBOT_USR }} -p ${{ secrets.UPBOUND_ROBOT_PSW }}
-          ./up xpkg push -f package.xpkg xpkg.upbound.io/nate-organization/cp-pkg-platform-ref-azure:${{ steps.tagger.outputs.VERSION_TAG }}
+          ./up xpkg push -f package.xpkg xpkg.upbound.io/nate-organization/cp-pkg-plat-ref-azure:${{ steps.tagger.outputs.VERSION_TAG }}
       - name: Checkout
         uses: actions/checkout@v2
       - name: Update manifest
         run: |
-          sed -i -e "s|package: xpkg.upbound.io/nate-organization/cp-pkg-platform-ref-azure:.*|package: xpkg.upbound.io/nate-organization/cp-pkg-platform-ref-azure:${{ steps.tagger.outputs.VERSION_TAG }}|g" ./configuration/configuration.yaml
+          sed -i -e "s|package: xpkg.upbound.io/nate-organization/cp-pkg-plat-ref-azure:.*|package: xpkg.upbound.io/nate-organization/cp-pkg-plat-ref-azure:${{ steps.tagger.outputs.VERSION_TAG }}|g" ./configuration/configuration.yaml
       - name: Commit changes
         uses: EndBug/add-and-commit@v7
         with:
