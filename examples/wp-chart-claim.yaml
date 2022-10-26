@@ -1,0 +1,11 @@
+apiVersion: platformref.crossplane.io/v1alpha1
+kind: Chart
+metadata:
+ name: wordpress
+spec:
+  id: wordpress
+  clusterRef: platform-ref-aws
+  version:  "13.1.15"
+  compositionSelector:
+    matchLabels:
+      chart: wordpress

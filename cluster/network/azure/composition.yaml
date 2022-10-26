@@ -1,0 +1,129 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: azure.xnetworks.azure.platformref.crossplane.io
+  labels:
+    cloud: azure
+spec:
+  compositeTypeRef:
+    apiVersion: platformref.crossplane.io/v1alpha1
+    kind: XNetwork
+  resources:
+    - name: resourceGroup
+      base:
+        apiVersion: azure.upbound.io/v1beta1
+        kind: ResourceGroup
+        spec:
+          forProvider:
+            location: East US 2
+      patches:
+      - fromFieldPath: spec.id
+        toFieldPath: metadata.name
+        transforms:
+          - type: string
+            string:
+              fmt: "%s-rg"
+      # - fromFieldPath: spec.id
+      #   toFieldPath: metadata.annotations[crossplane.io/external-name]
+      #   transforms:
+      #     - type: string
+      #       string:
+      #         fmt: "%s-rg"
+      - fromFieldPath: spec.id
+        toFieldPath: metadata.labels[azure.platformref.crossplane.io/app]
+    - name: virtualNet
+      base:
+        apiVersion: network.azure.upbound.io/v1beta1
+        kind: VirtualNetwork
+        spec:
+          forProvider:
+            resourceGroupNameSelector:
+              matchControllerRef: true
+            location: East US 2
+            addressSpace: ['192.168.0.0/16']
+      patches:
+      - fromFieldPath: spec.id
+        toFieldPath: metadata.labels[app]
+      - fromFieldPath: spec.id
+        toFieldPath: metadata.name
+        transforms:
+          - type: string
+            string:
+              fmt: "%s-vnet"
+      # - fromFieldPath: spec.id
+      #   toFieldPath: metadata.annotations[crossplane.io/external-name]
+      #   transforms:
+      #     - type: string
+      #       string:
+      #         fmt: "%s-vnet"
+      - fromFieldPath: spec.id
+        toFieldPath: metadata.labels[azure.platformref.crossplane.io/app]
+    - name: subnet
+      base:
+        apiVersion: network.azure.upbound.io/v1beta1
+        kind: Subnet
+        spec:
+          forProvider:
+            resourceGroupNameSelector:
+              matchControllerRef: true
+            virtualNetworkNameSelector:
+              matchControllerRef: true
+            addressPrefixes: 
+              - "192.168.1.0/24"
+      patches:
+      - fromFieldPath: spec.id
+        toFieldPath: metadata.labels[azure.platformref.crossplane.io/app]
+      - fromFieldPath: spec.id
+        toFieldPath: metadata.name
+        transforms:
+          - type: string
+            string:
+              fmt: "%s-sn"
+      # - fromFieldPath: spec.id
+      #   toFieldPath: metadata.annotations[crossplane.io/external-name]
+      #   transforms:
+      #     - type: string
+      #       string:
+      #         fmt: "%s-sn"
+    - name: prvDnsZone
+      base:
+        apiVersion: network.azure.upbound.io/v1beta1
+        kind: PrivateDNSZone
+        metadata:
+          annotations:
+            crossplane.io/external-name: privatelink.mariadb.database.azure.com        
+        spec:
+          forProvider:
+            resourceGroupNameSelector:
+              matchControllerRef: true
+      patches:
+      - fromFieldPath: spec.id
+        toFieldPath: metadata.name
+      # - fromFieldPath: spec.id
+      #   toFieldPath: metadata.annotations[crossplane.io/external-name]
+      #   transforms:
+      #       - type: string
+      #         string:
+      #           fmt: "%s.privatelink.mariadb.database.azure.com"
+      - fromFieldPath: spec.id
+        toFieldPath: metadata.labels[azure.platformref.crossplane.io/app]
+    - name: prvDnsZoneLink
+      base:
+        apiVersion: network.azure.upbound.io/v1beta1
+        kind: PrivateDNSZoneVirtualNetworkLink
+        spec:
+          forProvider:
+            registrationEnabled: false
+            privateDnsZoneNameSelector:
+              matchControllerRef: true
+            resourceGroupNameSelector:
+              matchControllerRef: true
+            virtualNetworkIdSelector:
+              matchControllerRef: true
+      patches:
+      - fromFieldPath: spec.id
+        toFieldPath: metadata.name
+      - fromFieldPath: spec.id
+        toFieldPath: metadata.annotations[crossplane.io/external-name]
+
+

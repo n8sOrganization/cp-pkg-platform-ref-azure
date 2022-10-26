@@ -1,21 +1,29 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xclusters.azure.platformref.crossplane.io
+  name: xclusters.platformref.crossplane.io
 spec:
   compositeTypeRef:
-    apiVersion: azure.platformref.crossplane.io/v1alpha1
+    apiVersion: platformref.crossplane.io/v1alpha1
     kind: XCluster
   resources:
-    - base:
-        apiVersion: azure.platformref.crossplane.io/v1alpha1
+    - name: xnetwork
+      base:
+        apiVersion: platformref.crossplane.io/v1alpha1
         kind: XNetwork
+        compositionSelector:
+          matchLabels:
+            cloud: azure
       patches:
         - fromFieldPath: spec.id
           toFieldPath: spec.id
-    - base:
-        apiVersion: azure.platformref.crossplane.io/v1alpha1
-        kind: XAKS
+    - name: xk8s
+      base:
+        apiVersion: platformref.crossplane.io/v1alpha1
+        kind: XK8s
+        compositionSelector:
+          matchLabels:
+            cloud: azure
       connectionDetails:
         - fromConnectionSecretKey: kubeconfig
       patches:
@@ -29,13 +37,11 @@ spec:
           toFieldPath: spec.parameters.nodes.count
         - fromFieldPath: spec.parameters.nodes.size
           toFieldPath: spec.parameters.nodes.size
-    - base:
-        apiVersion: azure.platformref.crossplane.io/v1alpha1
-        kind: XServices
-      patches:
-        - fromFieldPath: spec.id
-          toFieldPath: metadata.name
-        - fromFieldPath: spec.id
-          toFieldPath: spec.providerConfigRef.name
-        - fromFieldPath: spec.parameters.services.operators.prometheus.version
-          toFieldPath: spec.operators.prometheus.version
+    # - base:
+    #     apiVersion: charts.azure.platformref.crossplane.io/v1alpha1
+    #     kind: XPrometheus
+    #   patches:
+    #     - fromFieldPath: spec.id
+    #       toFieldPath: spec.providerConfigRef.name
+    #     - fromFieldPath: spec.parameters.services.operators.prometheus.version
+    #       toFieldPath: spec.operators.prometheus.version

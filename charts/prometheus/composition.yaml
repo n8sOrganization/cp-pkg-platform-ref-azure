@@ -1,0 +1,44 @@
+# This Compositio install Prometheus in a Kubernetes cluster. It is
+# used in this Configuration to install during the EKS cluster
+# provisioning.
+#
+# See provider-helm api referemce at
+# https://doc.crds.dev/github.com/crossplane-contrib/provider-helm
+#
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xpromerheus.charts.platformref.crossplane.io
+  labels:
+    chart: prometheus
+spec:
+  compositeTypeRef:
+    apiVersion: platformref.crossplane.io/v1alpha1
+    kind: Chart
+  resources:
+    - base:
+        apiVersion: helm.crossplane.io/v1beta1
+        kind: Release
+        metadata:
+          name: # patched
+          annotations: # patched
+          labels: # patched
+        spec:
+          writeConnectionSecretToRef:
+            name: # patched
+            namespace: # patched
+          providerConfigRef: # patched
+          rollbackLimit: 3
+          forProvider:
+            namespace: prometheus
+            chart:
+              name: kube-prometheus-stack
+              repository: https://prometheus-community.github.io/helm-charts
+              version: "10.1.0"
+            values: {}
+      name: releasePrometheus
+      patches:
+        - fromFieldPath: spec.providerConfigRef.name
+          toFieldPath: spec.providerConfigRef.name
+        - fromFieldPath: spec.operators.prometheus.version
+          toFieldPath: spec.forProvider.chart.version

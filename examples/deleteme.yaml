@@ -1,0 +1,23 @@
+apiVersion: network.azure.upbound.io/v1beta1
+kind: PrivateEndpoint
+metadata:
+  name: test
+spec:
+  forProvider:
+    location: East US 2
+    privateDnsZoneGroup:
+      - name: privatelink.mariadb.database.azure.com
+        privateDnsZoneIdsSelector:
+          matchLabels:
+            azure.platformref.crossplane.io/app: nate-platform-ref-azure
+    privateServiceConnection:
+    - isManualConnection: false
+      subresourceNames:
+        - mariadbServer
+      name: test
+      privateConnectionResourceId: /subscriptions/038f2b7c-3265-43b8-8624-c9ad5da610a8/resourceGroups/nate2-platform-ref-azure-rg/providers/Microsoft.DBforMariaDB/servers/nate2-platform-ref-azure-mariadb
+    resourceGroupName: nate2-platform-ref-azure-rg
+    subnetIdSelector:
+      matchLabels:
+        azure.platformref.crossplane.io/app: nate2-platform-ref-azure
+

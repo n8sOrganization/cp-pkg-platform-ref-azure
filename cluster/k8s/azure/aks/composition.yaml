@@ -1,0 +1,89 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: azure.xk8s.platformref.crossplane.io
+  labels:
+    cloud: azure
+spec:
+  compositeTypeRef:
+    apiVersion: platformref.crossplane.io/v1alpha1
+    kind: XK8s
+  resources:
+  # Create AKS Cluster and output kubeconfig to secret
+    - name: aksCluster
+      base:
+        apiVersion: containerservice.azure.upbound.io/v1beta1
+        kind: KubernetesCluster       
+        spec:
+          forProvider:
+            privateClusterPublicFqdnEnabled: true
+            networkProfile:
+              - networkPlugin: azure
+            location: East US 2
+            kubernetesVersion: "1.24.3" #If remarked out or ommitted, uses regions's default Kubernetes version. 
+            defaultNodePool:
+              - name: default
+                nodeCount: 1 #patched
+                vmSize: Standard_B2s #patched
+            identity:
+              - type: "SystemAssigned"
+      patches:
+        - fromFieldPath: spec.id
+          toFieldPath: metadata.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-aks"
+        # - fromFieldPath: spec.id
+        #   toFieldPath: metadata.annotations[crossplane.io/external-name]
+        #   transforms:
+        #     - type: string
+        #       string:
+        #         fmt: "%s-aks"
+        - fromFieldPath: spec.id
+          toFieldPath: spec.forProvider.resourceGroupNameSelector.matchLabels[azure.platformref.crossplane.io/app]
+        - fromFieldPath: spec.id
+          toFieldPath: spec.forProvider.defaultNodePool[0].vnetSubnetIDSelector.matchLabels[azure.platformref.crossplane.io/app]
+        - fromFieldPath: spec.id
+          toFieldPath: spec.forProvider.dnsPrefix
+        - fromFieldPath: spec.parameters.node.size
+          toFieldPath: spec.forProvider.defaultNodePool[0].vmSize
+          transforms:
+            - type: map
+              map:
+                small: Standard_B2s
+                medium: Standard_B4ms
+                large: Standard_DS3_v2
+        - fromFieldPath: "spec.parameters.nodes.count"
+          toFieldPath: "spec.forProvider.defaultNodePool[0].nodeCount"
+        - fromFieldPath: spec.writeConnectionSecretToRef.namespace
+          toFieldPath: spec.writeConnectionSecretToRef.namespace
+        - fromFieldPath: spec.writeConnectionSecretToRef.name
+          toFieldPath: spec.writeConnectionSecretToRef.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-akscluster"
+    # Creating Helm Provider Config for the cluster, using the cluster's connection kubeconfig secret.
+    - name: helmProviderConfig
+      base:
+        apiVersion: helm.crossplane.io/v1beta1
+        kind: ProviderConfig
+        spec:
+          credentials:
+            source: Secret
+            secretRef:
+              key: kubeconfig
+      patches:
+        - fromFieldPath: spec.id
+          toFieldPath: metadata.name
+        - fromFieldPath: spec.writeConnectionSecretToRef.namespace
+          toFieldPath: spec.credentials.secretRef.namespace
+        - fromFieldPath: spec.writeConnectionSecretToRef.name
+          toFieldPath: spec.credentials.secretRef.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-helm"
+      readinessChecks:
+        - type: None

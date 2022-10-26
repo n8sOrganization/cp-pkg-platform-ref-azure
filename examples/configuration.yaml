@@ -1,0 +1,13 @@
+apiVersion: pkg.crossplane.io/v1
+kind: Configuration
+metadata:
+  name: cp-pkg-platform-ref-azure
+spec:
+  ignoreCrossplaneConstraints: false
+  package: xpkg.upbound.io/nate-organization/plat-ref-azure:v0.0.2
+  packagePullSecrets:
+    - name: myorg-package-pull-secret
+  packagePullPolicy: Always
+  revisionActivationPolicy: Automatic
+  revisionHistoryLimit: 1
+  skipDependencyResolution: false

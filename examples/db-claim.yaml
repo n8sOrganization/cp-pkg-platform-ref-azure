@@ -1,0 +1,12 @@
+apiVersion: db.platformref.crossplane.io/v1alpha1
+kind: SQLSrv
+metadata:
+  name: nate-platform-ref-azure-db-srv
+spec:
+  parameters:
+    storageGB: 5 # In the Comosition, we use a math transform to multiply this by 1024
+    clusterRef:
+      id: nate-platform-ref-azure # This is the unique name of the cluster that was provisioned
+  compositionSelector:
+    matchLabels:
+      cloud: azure

@@ -1,0 +1,11 @@
+apiVersion: platformref.crossplane.io/v1alpha1
+kind: Cluster
+metadata:
+  name: nate-platform-ref-azure
+spec:
+  id: nate-platform-ref-azure
+  parameters:
+    nodes:
+      count: 1
+      size: small
+  cloud: azure

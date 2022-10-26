@@ -1,0 +1,123 @@
+# See provider-helm api referemce at
+# https://doc.crds.dev/github.com/crossplane-contrib/provider-helm
+#
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: wordpress.charts.platformref.crossplane.io
+  labels:
+    chart: wordpress
+spec:
+  compositeTypeRef:
+    apiVersion: platformref.crossplane.io/v1alpha1
+    kind: Chart
+  resources:
+    - base:
+        apiVersion: db.platformref.crossplane.io
+        kind: XSQLInstance
+        spec:
+          id: wordpress-db #patched
+          clusterRef: cluster #patched
+      patches:
+        - fromFieldPath: spec.clusterRef
+          toFieldPath: spec.clusterRef
+        - fromFieldPath: spec.id
+          toFieldPath: spec.id
+    ### Deploy Wordpress chart securely connected to external database.
+    - base:
+        apiVersion: helm.crossplane.io/v1beta1
+        kind: Release
+        spec:
+          rollbackLimit: 3
+          forProvider:
+            chart:
+              name: wordpress
+              repository: https://charts.bitnami.com/bitnami
+              version: "13.1.15" # patched
+            values:
+              persistence:
+                enabled: false
+              mariadb:
+                enabled: false
+              externalDatabase:
+                database: # patched
+                port: 3306
+              wordpressBlogName: Upbound Platform Reference 2.0 # patched
+            set: 
+              - name: externalDatabase.host
+                valueFrom: 
+                  secretKeyRef: 
+                    name: #patched
+                    namespace: # patched
+                    key: endpoint
+              - name: externalDatabase.user
+                valueFrom: 
+                  secretKeyRef: 
+                    name: #patched
+                    namespace: # patched
+                    key: username
+              - name: externalDatabase.password
+                valueFrom: 
+                  secretKeyRef: 
+                    name: #patched
+                    namespace: # patched
+                    key: password
+      patches:
+        - fromFieldPath: spec.id
+          toFieldPath: metadata.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-wordpress"
+        - fromFieldPath: metadata.labels
+          toFieldPath: metadata.labels
+        - fromFieldPath: metadata.annotations
+          toFieldPath: metadata.annotations
+        - fromFieldPath: spec.clusterRef
+          toFieldPath: spec.providerConfigRef.name
+        - fromFieldPath: spec.version
+          toFieldPath: spec.forProvider.chart.version
+        - fromFieldPath: spec.id
+          toFieldPath: spec.forProvider.namespace
+        - fromFieldPath: spec.id
+          toFieldPath: spec.writeConnectionSecretToRef.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-wordpress"
+        - fromFieldPath: spec.claimRef.namespace
+          toFieldPath: spec.writeConnectionSecretToRef.namespace
+        - fromFieldPath: spec.id
+          toFieldPath: spec.forProvider.values.externalDatabase.database
+        - fromFieldPath: "spec.clusterRef"
+          toFieldPath: spec.forProvider.set[0].valueFrom.secretKeyRef.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-db-srv"
+        - fromFieldPath: spec.claimRef.namespace
+          toFieldPath: spec.forProvider.set[0].valueFrom.secretKeyRef.namespace
+        - fromFieldPath: "spec.clusterRef"
+          toFieldPath: spec.forProvider.set[1].valueFrom.secretKeyRef.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-db-srv"
+        - fromFieldPath: spec.claimRef.namespace
+          toFieldPath: spec.forProvider.set[1].valueFrom.secretKeyRef.namespace
+        - fromFieldPath: "spec.clusterRef"
+          toFieldPath: spec.forProvider.set[2].valueFrom.secretKeyRef.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-db-srv"
+        - fromFieldPath: spec.claimRef.namespace
+          toFieldPath: spec.forProvider.set[2].valueFrom.secretKeyRef.namespace
+        - fromFieldPath: "spec.id"
+          toFieldPath: spec.forProvider.values.wordpressBlogName
+          transforms:
+            - type: string
+              string:
+                fmt: "Upbound Platform Reference 2.0 - %s"
+
+
