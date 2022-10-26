@@ -2,44 +2,42 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
-      - release-*
+    tags:
+      - '*'
   workflow_dispatch: {}
 
 jobs:
   configuration:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
           submodules: true
           fetch-depth: 0
+          ref: main
       # The tagger step uses the same logic in the build submodule to generate package tag
       # https://github.com/upbound/build/blob/4f64913157a952dbe77cd9e05457d9abe695a1d4/makelib/common.mk#L193
       - name: Set tag
         run: echo "::set-output name=VERSION_TAG::$(git describe --dirty --always --tags | sed 's/-.*//' )"
         id: tagger
-      - name: Build
-        uses: crossplane-contrib/xpkg-action@v0.2.0
-        with:
-          channel: stable
-          version: current
-          command: build configuration -f ${{ github.workspace }} --name package.xpkg --ignore 'configuration/*,.github/*,.github/*/*,examples/*,hack/*'
-      - name: Install Up CLI and Push Package
+      - name: Install Up CLI, Build and Push Package
         run: |
           curl -sL https://cli.upbound.io | sh
           ./up login -u ${{ secrets.UPBOUND_ROBOT_USR }} -p ${{ secrets.UPBOUND_ROBOT_PSW }}
+          ./up xpkg build -f ${{ github.workspace }}/ --name package.xpkg --ignore ".github/workflows/*,examples/*,hack/*"
           ./up xpkg push -f package.xpkg xpkg.upbound.io/nate-organization/cp-pkg-platform-ref-azure:${{ steps.tagger.outputs.VERSION_TAG }}
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: main
       - name: Update manifest
         run: |
-          sed -i -e "s|package: registry.upbound.io/nate-organization/cp-pkg-platform-ref-azure:.*|package: registry.upbound.io/nate-organization/cp-pkg-platform-ref-azure:${{ steps.tagger.outputs.VERSION_TAG }}|g" ./configuration/configuration.yaml
+          sed -i -e "s|xpkg.upbound.io/nate-organization/multi-k8s.*|xpkg.upbound.io/nate-organization/multi-k8s:${{ steps.tagger.outputs.VERSION_TAG }}|g" ./cluster/configuration.yaml
       - name: Commit changes
-        uses: EndBug/add-and-commit@v7
+        uses: EndBug/add-and-commit@v9.0.1
         with:
           add: '.'
+          push: origin main --force
           message: "github bot package version update"
           signoff: true
