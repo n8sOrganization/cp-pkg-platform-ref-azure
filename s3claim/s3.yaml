@@ -2,10 +2,8 @@ apiVersion: s3.aws.upbound.io/v1beta1
 kind: Bucket
 metadata:
  labels:
-   aws.upbound.io/crossplanecreated-name: velero
- name: velero
+   aws.upbound.io/crossplanecreated-name: velero-nate
+ name: velero-nate
 spec:
  forProvider:
    region: us-east-1
- providerConfigRef:
-   name: aws-providerconfig
